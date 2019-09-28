@@ -12,7 +12,7 @@
         public MainView(string benutzername)
         {
             InitializeComponent();
-            DataContext = new MainViewModel(benutzername);
+            DataContext = new MainViewModel(benutzername, this);
         }
     }
 }

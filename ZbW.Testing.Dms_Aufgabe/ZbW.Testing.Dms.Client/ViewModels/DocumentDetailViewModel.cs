@@ -1,4 +1,8 @@
-﻿namespace ZbW.Testing.Dms.Client.ViewModels
+﻿using System.Windows;
+using ZbW.Testing.Dms.Client.Model;
+using ZbW.Testing.Dms.Client.Services;
+
+namespace ZbW.Testing.Dms.Client.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -32,12 +36,16 @@
 
         private DateTime? _valutaDatum;
 
+        private DocumentService _documentService;
+
         public DocumentDetailViewModel(string benutzer, Action navigateBack)
         {
             _navigateBack = navigateBack;
             Benutzer = benutzer;
             Erfassungsdatum = DateTime.Now;
             TypItems = ComboBoxItems.Typ;
+
+            _documentService = new DocumentService();
 
             CmdDurchsuchen = new DelegateCommand(OnCmdDurchsuchen);
             CmdSpeichern = new DelegateCommand(OnCmdSpeichern);
@@ -95,18 +103,6 @@
             }
         }
 
-        public DateTime Erfassungsdatum
-        {
-            get
-            {
-                return _erfassungsdatum;
-            }
-
-            set
-            {
-                SetProperty(ref _erfassungsdatum, value);
-            }
-        }
 
         public string Benutzer
         {
@@ -150,6 +146,15 @@
                 SetProperty(ref _isRemoveFileEnabled, value);
             }
         }
+        public DateTime Erfassungsdatum {
+            get {
+                return _erfassungsdatum;
+            }
+
+            set {
+                SetProperty (ref _erfassungsdatum, value);
+            }
+        }
 
         private void OnCmdDurchsuchen()
         {
@@ -165,8 +170,47 @@
         private void OnCmdSpeichern()
         {
             // TODO: Add your Code here
+            if (!this.hasAllRequiredFieldSet())
+            {
+                MessageBox.Show("Es müssen alle Pflichtfelder ausgefüllt werden!");
+                return;
+            }
 
+            if (!this.isDocumentSelected())
+            {
+                MessageBox.Show("Es muss ein Document ausgewählt sein.");
+                return;
+            }
+
+            this._documentService.AddDocumentToDms(this.CreateMetadataItem());
             _navigateBack();
+        }
+
+        private MetadataItem CreateMetadataItem()
+        {
+            var metadataItem = new MetadataItem();
+            metadataItem.Benutzer = Properties.Settings.Default.currentUser;
+            metadataItem.Bezeichnung = Bezeichnung;
+            metadataItem.FilePath = this._filePath;
+            metadataItem.IsRemoveFileEnabled = this.IsRemoveFileEnabled;
+            metadataItem.Stichwoerter = this.Stichwoerter;
+            metadataItem.Type = this.SelectedTypItem;
+            metadataItem.ValutaDatum = (DateTime) this.ValutaDatum;
+            metadataItem.Erfassungsdatum = DateTime.Now;
+
+            return metadataItem;
+        }
+
+        private Boolean isDocumentSelected()
+        {
+            return !String.IsNullOrEmpty(this._filePath);
+        }
+
+        private Boolean hasAllRequiredFieldSet ()
+        {
+            return !String.IsNullOrEmpty(this.Bezeichnung) &&
+                   this.ValutaDatum.HasValue &&
+                   !String.IsNullOrEmpty(this.SelectedTypItem);
         }
     }
 }

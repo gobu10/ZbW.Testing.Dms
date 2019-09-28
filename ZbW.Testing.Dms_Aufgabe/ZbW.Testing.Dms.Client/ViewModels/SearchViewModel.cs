@@ -1,4 +1,7 @@
-﻿namespace ZbW.Testing.Dms.Client.ViewModels
+﻿using System;
+using ZbW.Testing.Dms.Client.Services;
+
+namespace ZbW.Testing.Dms.Client.ViewModels
 {
     using System.Collections.Generic;
 
@@ -20,6 +23,8 @@
 
         private List<string> _typItems;
 
+        private DocumentService _documentService;
+
         public SearchViewModel()
         {
             TypItems = ComboBoxItems.Typ;
@@ -27,6 +32,10 @@
             CmdSuchen = new DelegateCommand(OnCmdSuchen);
             CmdReset = new DelegateCommand(OnCmdReset);
             CmdOeffnen = new DelegateCommand(OnCmdOeffnen, OnCanCmdOeffnen);
+
+            _documentService=new DocumentService();
+
+            this.FilteredMetadataItems = _documentService.GetAllMetadataItems();
         }
 
         public DelegateCommand CmdOeffnen { get; }
@@ -111,16 +120,21 @@
         private void OnCmdOeffnen()
         {
             // TODO: Add your Code here
+            this._documentService.OpenFile(SelectedMetadataItem);
         }
 
         private void OnCmdSuchen()
         {
             // TODO: Add your Code here
+            this.FilteredMetadataItems = this._documentService.FilterMetadataItems(this.SelectedTypItem, this.Suchbegriff);
         }
 
         private void OnCmdReset()
         {
             // TODO: Add your Code here
+            this.FilteredMetadataItems = this._documentService.MetadataItems;
+            this.Suchbegriff = String.Empty;
+            this.SelectedTypItem = null;
         }
     }
 }

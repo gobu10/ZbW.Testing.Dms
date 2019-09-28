@@ -72,6 +72,15 @@
     </ApplicationDefinition>
     <Compile Include="Model\MetadataItem.cs" />
     <Compile Include="Repositories\ComboBoxItems.cs" />
+    <Compile Include="Services\CouldNotCopyFileException.cs" />
+    <Compile Include="Services\CouldNotMoveFileExceptioncs.cs" />
+    <Compile Include="Services\DocumentService.cs" />
+    <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\FileTestable.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UserTestable.cs" />
+    <Compile Include="Services\XmlService.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\DocumentDetailViewModel.cs" />
@@ -134,7 +143,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Key.ico" />
@@ -145,8 +156,6 @@
   <ItemGroup>
     <Resource Include="Images\magnifying_glass.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

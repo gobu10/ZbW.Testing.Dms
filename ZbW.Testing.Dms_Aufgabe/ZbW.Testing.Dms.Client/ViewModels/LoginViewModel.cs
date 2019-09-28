@@ -1,4 +1,7 @@
-﻿namespace ZbW.Testing.Dms.Client.ViewModels
+﻿using System;
+using ZbW.Testing.Dms.Client.Services;
+
+namespace ZbW.Testing.Dms.Client.ViewModels
 {
     using System.Windows;
 
@@ -7,17 +10,24 @@
 
     using ZbW.Testing.Dms.Client.Views;
 
-    internal class LoginViewModel : BindableBase
+    public class LoginViewModel : BindableBase
     {
         private readonly LoginView _loginView;
 
         private string _benutzername;
 
+        private UserService _userService;
+
         public LoginViewModel(LoginView loginView)
         {
             _loginView = loginView;
+            _userService = new UserService();
+
             CmdLogin = new DelegateCommand(OnCmdLogin, OnCanLogin);
             CmdAbbrechen = new DelegateCommand(OnCmdAbbrechen);
+
+            var username = this._userService.GetUsername();
+            this.AutoLoginIfPossible(username);
         }
 
         public DelegateCommand CmdAbbrechen { get; }
@@ -40,6 +50,14 @@
             }
         }
 
+        private void AutoLoginIfPossible(String username)
+        {
+            if (!String.IsNullOrEmpty(username))
+            {
+                Benutzername = username;
+                this.OnCmdLogin();
+            }
+        }
         private bool OnCanLogin()
         {
             return !string.IsNullOrEmpty(Benutzername);
@@ -57,6 +75,8 @@
                 MessageBox.Show("Bitte tragen Sie einen Benutzernamen ein...");
                 return;
             }
+
+            this._userService.SaveUsername(Benutzername);
 
             var searchView = new MainView(Benutzername);
             searchView.Show();
